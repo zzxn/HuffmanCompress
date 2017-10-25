@@ -14,7 +14,7 @@ import java.util.Scanner;
 public class ZcsFileInputStream {
     private FileInputStream fileInputStream;
     private BitFileInputStream bitFileInputStream;
-    private Scanner scanner;
+    private MyScanner scanner;
     // 标明是否处于编码区的flag
     // 能自主判断进入编码区，但不能自主判断走出编码区
     // TODO 需要外部利用skipToNoCode（）来走出编码区
@@ -23,32 +23,29 @@ public class ZcsFileInputStream {
     public ZcsFileInputStream(FileInputStream fileInputStream) throws IOException {
         this.fileInputStream = fileInputStream;
         this.bitFileInputStream = new BitFileInputStream(fileInputStream);
-        this.scanner = new Scanner(fileInputStream);
+        this.scanner = new MyScanner(fileInputStream);
     }
 
     public String read() throws IOException {
-        System.out.println(fileInputStream.available());
         if (fileInputStream.available() != 0) {
             if (!inCodeArea) {
                 String next = scanner.nextLine();
-                System.out.println(fileInputStream.available());
                 if (next.matches("^\\$CodeHead$")) {
                     inCodeArea = true;
-                    fileInputStream.read(); // TODO 这里跳过换行符是否正确
+                    // 不需跳过换行符，scanner已经做到了这一点
                 }
                 return next;
             }else {
                 return (new Integer(bitFileInputStream.read())).toString();
             }
         }
-        return "error: overflow";
+        return null;
     }
 
     public void skipToNocode() throws IOException {
         if (!inCodeArea)
             throw new IOException("only skip when in code area");
         inCodeArea = false;
-        scanner.nextLine();
     }
 
     public int available() throws IOException {

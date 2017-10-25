@@ -35,6 +35,7 @@ public class HuffmanDecompress {
 
         //  进行解压
         while (inputStream.available() != 0) {
+
             // 获取基本信息
             String filePath = zcsFileInputStream.read().substring(10);
             File singleOutputFile = new File(outputFile.getPath()+"/"+filePath);
@@ -63,10 +64,9 @@ public class HuffmanDecompress {
             // 进入编码区，zcsFileInputStream行为改变，现在返回0或1单字字符串
             System.out.println("解码中：" + singleOutputFile.getPath());
             String codeHead = zcsFileInputStream.read();
-            for (int i = 0; i < 8; i++)
             if (!codeHead.equals("$CodeHead"))
                 throw new IllegalArgumentException("Invalid .zcs file");
-            long sizeCount = 0; // 记录已经解压出的数据量
+            long sizeCount = 0L; // 记录已经解压出的数据量
             StringBuilder codeBuilder = new StringBuilder();
             while (sizeCount < fileSize)  {
                 codeBuilder.append(zcsFileInputStream.read());
@@ -78,11 +78,16 @@ public class HuffmanDecompress {
                 }
             }
             fileOutputStream.close();
+
             // 跳出编码区，进行下一轮循环
             zcsFileInputStream.skipToNocode();
             String codeTail = zcsFileInputStream.read();
-            if (!codeTail.equals("$CodeTail"))
+            while (!codeTail.equals("$CodeTail")) {
+                codeTail = zcsFileInputStream.read();
+            }
+            if (!codeTail.equals("$CodeTail") && inputStream.available() == 0)
                 throw new IllegalArgumentException("Invalid .zcs File");
+            System.out.println("文件 " + singleOutputFile.getPath()+ " 解压完成");
         }
 
     }

@@ -21,7 +21,7 @@ import static org.junit.Assert.*;
 public class HuffmanCompressTest {
     @Test
     public void compress() throws Exception {
-        File inputFile = new File("C:/Users/19098/Desktop/0.txt");
+        File inputFile = new File("C:/Users/19098/Desktop/Test Cases");
         File outputFile = new File("C:/Users/19098/Desktop/okTestCompress.zcs");
         HuffmanCompress.compress(inputFile, outputFile);
     }

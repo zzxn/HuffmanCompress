@@ -139,7 +139,7 @@ public class HuffmanCompress {
      * 对输入的文件进行统计，返回编码表
      */
     private static String[] getFileCodeTable(File file) throws IOException {
-        System.out.print("making codeTable for " + file.getPath() + "...");
+        System.out.println("making codeTable for " + file.getPath() + "...");
         if (file.isDirectory())
             throw new IllegalArgumentException("Only to compress single file!");
         InputStream inputStream = new FileInputStream(file);
