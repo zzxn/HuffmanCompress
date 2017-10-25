@@ -54,12 +54,12 @@ public class HuffmanCompress {
 
         // 写入编码信息
         PrintWriter printWriter = new PrintWriter(outputStream);
-        printWriter.println("$FilePath:" + path);
+        printWriter.print("$FilePath:" + path + "\n");
         // 解压时用，大小到了就不再解码（说明剩下的bit都是不满一个byte的补0）
-        printWriter.println("$FileSize:" + inputFile.length());
-        printWriter.println("$CodeTable:");
+        printWriter.print("$FileSize:" + inputFile.length() + "\n");
+        printWriter.print("$CodeTable:\n");
         for (String aCodeTable : codeTable) {
-            printWriter.println(aCodeTable);
+            printWriter.print(aCodeTable+"\n");
         }
         printWriter.print("$CodeHead\n");
         printWriter.flush();
@@ -79,8 +79,8 @@ public class HuffmanCompress {
         inputStream.close();
 
         //打印编码结束
-        printWriter.println();
-        printWriter.println("$CodeTail");
+        printWriter.print("\n");
+        printWriter.print("$CodeTail\n");
         printWriter.close();
     }
 
@@ -102,11 +102,11 @@ public class HuffmanCompress {
             FileOutputStream outputStream = new FileOutputStream(outputFile, true);
             PrintWriter printWriter = new PrintWriter(outputStream);
             long fileSize = getDirSize(inputFile);
-            System.out.println("FileSize: " + fileSize);
+            System.out.print("FileSize: " + fileSize + "\n");
             dirPathLen = inputFile.getPath().length() - inputFile.getName().length();
 
-            printWriter.println("$ZhuxiaoningCompressedFile");
-            printWriter.println("$TotalSize:" + fileSize);
+            printWriter.print("$ZhuxiaoningCompressedFile\n");
+            printWriter.print("$TotalSize:" + fileSize + "\n");
             printWriter.close();
 
             isFirstDir = false;
@@ -139,7 +139,7 @@ public class HuffmanCompress {
      * 对输入的文件进行统计，返回编码表
      */
     private static String[] getFileCodeTable(File file) throws IOException {
-        System.out.println("making codeTable for " + file.getPath() + "...");
+        System.out.print("making codeTable for " + file.getPath() + "...");
         if (file.isDirectory())
             throw new IllegalArgumentException("Only to compress single file!");
         InputStream inputStream = new FileInputStream(file);
