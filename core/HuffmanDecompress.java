@@ -1,6 +1,11 @@
 package core;
 
-import java.io.*;
+import core.io.ZcsFileInputStream;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.TreeMap;
 
 /**
@@ -36,10 +41,10 @@ public class HuffmanDecompress {
 
             // 获取基本信息
             String filePath = zcsFileInputStream.read().substring(10);
-            File singleOutputFile = new File(outputFile.getPath()+"/"+filePath);
+            File singleOutputFile = new File(outputFile.getPath() + "/" + filePath);
             if (!singleOutputFile.exists()) {
                 File fileParent = singleOutputFile.getParentFile();
-                if(!fileParent.exists()){
+                if (!fileParent.exists()) {
                     fileParent.mkdirs();
                 }
                 singleOutputFile.createNewFile();
@@ -66,7 +71,7 @@ public class HuffmanDecompress {
                 throw new IllegalArgumentException("Invalid .zcs file");
             long sizeCount = 0L; // 记录已经解压出的数据量
             StringBuilder codeBuilder = new StringBuilder();
-            while (sizeCount < fileSize)  {
+            while (sizeCount < fileSize) {
                 codeBuilder.append(zcsFileInputStream.read());
                 if (decodeTable.containsKey(codeBuilder.toString())) {
                     fileOutputStream.write(decodeTable.get(codeBuilder.toString()));
@@ -85,7 +90,7 @@ public class HuffmanDecompress {
             }
             if (!codeTail.equals("$CodeTail") && inputStream.available() == 0)
                 throw new IllegalArgumentException("Invalid .zcs File");
-            System.out.println("文件 " + singleOutputFile.getPath()+ " 解压完成");
+            System.out.println("文件 " + singleOutputFile.getPath() + " 解压完成");
         }
 
     }

@@ -1,4 +1,4 @@
-package core;
+package core.io;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,8 +20,8 @@ public class MyScanner {
         while (fileInputStream.available() != 0) {
             int nextByte = fileInputStream.read();
             if (nextByte != 0x0A) {
-                buf.append((char)nextByte);
-            }else {
+                buf.append((char) nextByte);
+            } else {
                 // 把游标放到换行符后面位置
                 String st = buf.toString();
                 buf = new StringBuilder();

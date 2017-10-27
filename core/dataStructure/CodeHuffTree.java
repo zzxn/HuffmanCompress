@@ -18,7 +18,7 @@ public class CodeHuffTree {
         // build a ByteNode list
         ByteNode[] byteNodeList = new ByteNode[256];
         for (int i = 0; i < 256; i++) {
-            byteNodeList[i] = new ByteNode((byte)i, frequencyList[i]);
+            byteNodeList[i] = new ByteNode((byte) i, frequencyList[i]);
         }
 
         // build a Huffman tree
@@ -53,7 +53,7 @@ public class CodeHuffTree {
         // build a ByteNode list
         ByteNode[] byteNodeList = new ByteNode[length];
         for (int i = 0; i < length; i++) {
-            byteNodeList[i] = new ByteNode((byte)i, frequencyList[i]);
+            byteNodeList[i] = new ByteNode((byte) i, frequencyList[i]);
         }
 
         // build a Huffman tree
@@ -171,7 +171,7 @@ public class CodeHuffTree {
         private void insertZeroBeforeAllChildCode(ByteNode node) {
             if (node == null)
                 return;
-            node.code.insert(0,0);
+            node.code.insert(0, 0);
             ByteNode left = node.getLeftChild();
             ByteNode right = node.getRightChild();
             if (left != null) {
@@ -181,10 +181,11 @@ public class CodeHuffTree {
                 insertZeroBeforeAllChildCode(right);
             }
         }
+
         private void insertOneBeforeAllChildCode(ByteNode node) {
             if (node == null)
                 return;
-            node.code.insert(0,1);
+            node.code.insert(0, 1);
             ByteNode left = node.getLeftChild();
             ByteNode right = node.getRightChild();
             if (left != null) {

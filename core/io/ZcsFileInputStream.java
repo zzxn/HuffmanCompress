@@ -1,8 +1,7 @@
-package core;
+package core.io;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Scanner;
 
 /**
  * @author 16307110325
@@ -30,13 +29,13 @@ public class ZcsFileInputStream {
         if (fileInputStream.available() != 0) {
             if (!inCodeArea) {
                 String next = scanner.nextLine();
-                if (next.matches("^\\$CodeHead$")) {
+                if (next.equals("$CodeHead")) {
                     inCodeArea = true;
                     // 不需跳过换行符，scanner已经做到了这一点
                     bitFileInputStream.reset();
                 }
                 return next;
-            }else {
+            } else {
                 return (new Integer(bitFileInputStream.read())).toString();
             }
         }

@@ -1,6 +1,4 @@
-package core;
-
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
+package core.io;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -25,12 +23,12 @@ public class BitFileInputStream {
 
     public int read() throws IOException {
         if (bitCount == 0) {
-            thisByte = (byte)inputStream.read();
+            thisByte = (byte) inputStream.read();
         }
 
         int thisBit = (thisByte >> (7 - bitCount)) & 1;
 
-        bitCount ++;
+        bitCount++;
         if (bitCount == 8)
             bitCount = 0;
 
@@ -46,7 +44,7 @@ public class BitFileInputStream {
         if (inputStream.available() == 0 && bitCount == 0)
             return 0;
         else
-            return inputStream.available()*8 + 8 - bitCount;
+            return inputStream.available() * 8 + 8 - bitCount;
     }
 
     public void close() throws IOException {

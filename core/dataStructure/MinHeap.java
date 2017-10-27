@@ -6,14 +6,8 @@ package core.dataStructure;
  */
 public class MinHeap<T extends Comparable<? super T>> {
     private static final int DEFAULT_CAPACITY = 100;
-
-    public int getCurrentSize() {
-        return currentSize;
-    }
-
     private int currentSize;
     private T[] array; // 0位置留空，第一个元素在array[1]
-
     public MinHeap() {
         currentSize = 0;
         array = (T[]) new Comparable[DEFAULT_CAPACITY];
@@ -35,6 +29,10 @@ public class MinHeap<T extends Comparable<? super T>> {
         }
 //        System.arraycopy(items, 0, this.array, 1, currentSize);
         buildHeap();
+    }
+
+    public int getCurrentSize() {
+        return currentSize;
     }
 
     private void buildHeap() {
