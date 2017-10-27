@@ -37,6 +37,11 @@ public class BitFileInputStream {
         return thisBit;
     }
 
+    public void reset() {
+        thisByte = 0;
+        bitCount = 0;
+    }
+
     public long available() throws IOException {
         if (inputStream.available() == 0 && bitCount == 0)
             return 0;

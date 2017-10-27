@@ -39,15 +39,17 @@ public class ZcsFileOutputStream {
     }
 
     public void flush() throws IOException {
-        if (buffer != 0) {
+        // 如果一个byte没有写完，那么后面补零
+        if (count != 0) {
             outputStream.write((byte)buffer);
+            count = 0;
+            buffer = 0;
         }
         outputStream.flush();
     }
 
     public void close() throws IOException {
         // 最后一码不足8个倍数时，后面补0
-        // TODO 补0可能造成歧义，为此需要在解压缩信息中标清结束位置
         flush();
         outputStream.close();
     }

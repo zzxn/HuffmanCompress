@@ -17,7 +17,7 @@ public class ZcsFileInputStream {
     private MyScanner scanner;
     // 标明是否处于编码区的flag
     // 能自主判断进入编码区，但不能自主判断走出编码区
-    // TODO 需要外部利用skipToNoCode（）来走出编码区
+    // 需要外部利用skipToNoCode（）来走出编码区
     private boolean inCodeArea = false;
 
     public ZcsFileInputStream(FileInputStream fileInputStream) throws IOException {
@@ -33,6 +33,7 @@ public class ZcsFileInputStream {
                 if (next.matches("^\\$CodeHead$")) {
                     inCodeArea = true;
                     // 不需跳过换行符，scanner已经做到了这一点
+                    bitFileInputStream.reset();
                 }
                 return next;
             }else {
@@ -46,6 +47,7 @@ public class ZcsFileInputStream {
         if (!inCodeArea)
             throw new IOException("only skip when in code area");
         inCodeArea = false;
+        bitFileInputStream.reset();
     }
 
     public int available() throws IOException {

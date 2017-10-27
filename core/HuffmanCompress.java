@@ -10,26 +10,6 @@ import java.io.*;
  */
 public class HuffmanCompress {
 
-    public static void main(String[] args) throws IOException {
-//        File inputFile = new File("C:/Users/19098/Desktop/1.txt");
-//        File outputFile = new File("C:/Users/19098/Desktop/testcprs.zcs");
-//        File afterDecompressFile = new File("C:/Users/19098/Desktop/2.txt");
-//
-//        String[] codeTable = getFileCodeTable(inputFile);
-//
-//        // TODO 得到解码表，这部分工作应该放到解压缩时进行
-//        TreeMap<String, Byte> decodeTable = new TreeMap<>();
-//        for (int i = 0; i < codeTable.length; i++) {
-//            decodeTable.put(codeTable[i], (byte)i);
-//        }
-//
-//        compressSingleFile(inputFile, outputFile, codeTable, "./1.txt");
-
-        // 测试解压缩
-        //core.HuffmanDecompress.decompressFile(outputFile, afterDecompressFile, decodeTable);
-    }
-
-
     /**
      * @param inputFile 需要压缩的文件
      * @param outputFile 压缩编码输出文件
@@ -40,7 +20,7 @@ public class HuffmanCompress {
      */
     private static void compressSingleFile(File inputFile, File outputFile, String[] codeTable, String path) throws IOException {
         if (inputFile.isDirectory())
-            throw new IllegalArgumentException("Only to compress single file!");
+            throw new IllegalArgumentException("Only to compressDir single file!");
         if (codeTable.length != 256)
             throw new IllegalArgumentException("Invalid Code Table!");
 
@@ -67,7 +47,8 @@ public class HuffmanCompress {
 
         // 写入编码区
         while (inputStream.available() != 0) {
-            String code = codeTable[inputStream.read()];
+            int thisByte = inputStream.read();
+            String code = codeTable[thisByte];
             zcsFileOutputStream.write(code);
             // 这里不要flush，否则产生很可能产生bug
             // 可能产生bug的原因是：flush时，如果发现所写的code不是整数个byte，会在末尾补0
@@ -82,6 +63,7 @@ public class HuffmanCompress {
         printWriter.print("\n");
         printWriter.print("$CodeTail\n");
         printWriter.close();
+        outputStream.close();
     }
 
     // 在compress中用来判断是否是最外层文件夹
@@ -94,7 +76,7 @@ public class HuffmanCompress {
      * @throws IOException IOException
      * 压缩函数，可以压缩文件和文件夹
      */
-    public static void compress(File inputFile, File outputFile) throws IOException {
+    private static void compressDir(File inputFile, File outputFile) throws IOException {
         // 读取并写入文件信息
         if (isFirstDir) {
             if (outputFile.isDirectory())
@@ -116,13 +98,14 @@ public class HuffmanCompress {
             // 逐个文件写入压缩编码
             File[] allFiles = inputFile.listFiles();
             for (File file : allFiles) {
-                if (file.isDirectory()) {
-                    compress(file, outputFile);
-                }else {
-                    String fileNameWithPath = file.getPath().substring(dirPathLen);
-                    String[] codeTable = getFileCodeTable(file);
-                    compressSingleFile(file, outputFile, codeTable, fileNameWithPath);
-                }
+//                if (file.isDirectory()) {
+//                    compressDir(file, outputFile);
+//                }else {
+//                    String fileNameWithPath = file.getPath().substring(dirPathLen);
+//                    String[] codeTable = getFileCodeTable(file);
+//                    compressSingleFile(file, outputFile, codeTable, fileNameWithPath);
+//                }
+                compressDir(file, outputFile);
             }
         }else if (inputFile.isFile()) {
             String fileNameWithPath = inputFile.getPath().substring(dirPathLen);
@@ -130,6 +113,11 @@ public class HuffmanCompress {
             compressSingleFile(inputFile, outputFile, codeTable, fileNameWithPath);
         }
 
+    }
+
+    public static void compress(File inputFile, File outputFile) throws IOException {
+        compressDir(inputFile, outputFile);
+        HuffmanCompress.reset();
     }
 
     /**
@@ -141,7 +129,7 @@ public class HuffmanCompress {
     private static String[] getFileCodeTable(File file) throws IOException {
         System.out.println("making codeTable for " + file.getPath() + "...");
         if (file.isDirectory())
-            throw new IllegalArgumentException("Only to compress single file!");
+            throw new IllegalArgumentException("Only to compressDir single file!");
         InputStream inputStream = new FileInputStream(file);
         int[] frequencyList = new int[256];
         while (inputStream.available() != 0) {
@@ -153,7 +141,6 @@ public class HuffmanCompress {
         String[] codeTable = codeHuffTree.getCodeTable();
 
         // 优化codeTable，把没用到的字节哈夫曼编码设置为空
-        // TODO 解码时应忽略“”这个编码
         for (int i = 0; i < 256; i++) {
             if (frequencyList[i] == 0)
                 codeTable[i] = "";
@@ -181,5 +168,10 @@ public class HuffmanCompress {
             System.out.println("文件或者文件夹不存在，请检查路径是否正确！");
             return 0;
         }
+    }
+
+    private static void reset() {
+        HuffmanCompress.isFirstDir = true;
+        HuffmanCompress.dirPathLen = 0;
     }
 }

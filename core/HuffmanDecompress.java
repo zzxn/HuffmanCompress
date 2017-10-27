@@ -17,8 +17,6 @@ public class HuffmanDecompress {
         if (!zcsFile.getName().matches("(.zcs)$"))
             System.out.println("It should have postfix .zcs.");
 
-        //TODO 根据固定格式的压缩信息解压缩
-
         FileInputStream inputStream = new FileInputStream(zcsFile);
         ZcsFileInputStream zcsFileInputStream = new ZcsFileInputStream(inputStream);
 
@@ -29,7 +27,7 @@ public class HuffmanDecompress {
 
         // 获取解压后总大小
         String totalSizeString = zcsFileInputStream.read().substring(11);
-        long totalSize = Integer.parseInt(totalSizeString);
+        long totalSize = Long.parseLong(totalSizeString);
         if (totalSize > outputFile.getFreeSpace())
             throw new IOException("可用空间不足，无法执行解压，请至少腾出 " + totalSize + " 字节大小的空间");
 

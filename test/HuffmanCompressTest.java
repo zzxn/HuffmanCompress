@@ -2,17 +2,9 @@ package test;
 
 import core.HuffmanCompress;
 import core.HuffmanDecompress;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import java.io.File;
-
-import static org.junit.Assert.*;
 
 /**
  * @author 16307110325
@@ -21,15 +13,21 @@ import static org.junit.Assert.*;
 public class HuffmanCompressTest {
     @Test
     public void compress() throws Exception {
-        File inputFile = new File("C:/Users/19098/Desktop/Test Cases");
+        File inputFile = new File("C:/Users/19098/Desktop/MytestCase");
         File outputFile = new File("C:/Users/19098/Desktop/okTestCompress.zcs");
+        File inputFile2 = new File("C:/Users/19098/Desktop/MytestCase/13.jpg");
+        File outputFile2 = new File("C:/Users/19098/Desktop/okTestCompress2.zcs");
         HuffmanCompress.compress(inputFile, outputFile);
+        HuffmanCompress.compress(inputFile2, outputFile2);
     }
 
     @Test
     public void compressAndDec() throws Exception {
         File zcsFile = new File("C:/Users/19098/Desktop/okTestCompress.zcs");
         File outputFile = new File("C:/Users/19098/Desktop/Test decompress");
+        File zcsFile2 = new File("C:/Users/19098/Desktop/okTestCompress2.zcs");
+        File outputFile2 = new File("C:/Users/19098/Desktop/Test decompress");
         HuffmanDecompress.decompressFile(zcsFile, outputFile);
+        HuffmanDecompress.decompressFile(zcsFile2, outputFile2);
     }
 }
