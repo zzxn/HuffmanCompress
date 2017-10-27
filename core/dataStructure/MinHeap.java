@@ -4,23 +4,23 @@ package core.dataStructure;
  * @author 16307110325
  * Created on 2017/10/18.
  */
-public class MinHeap<T extends Comparable<? super T>> {
+class MinHeap<T extends Comparable<? super T>> {
     private static final int DEFAULT_CAPACITY = 100;
     private int currentSize;
     private T[] array; // 0位置留空，第一个元素在array[1]
-    public MinHeap() {
+    MinHeap() {
         currentSize = 0;
         array = (T[]) new Comparable[DEFAULT_CAPACITY];
     }
 
-    public MinHeap(int capacity) throws Exception {
+    MinHeap(int capacity) throws Exception {
         currentSize = 0;
         if (capacity < 1)
             throw new Exception();
         array = (T[]) new Comparable[capacity];
     }
 
-    public MinHeap(T[] items) {
+    MinHeap(T[] items) {
         this.currentSize = items.length;
         this.array = (T[]) new Comparable[currentSize * 2 + 1];
 
@@ -31,7 +31,7 @@ public class MinHeap<T extends Comparable<? super T>> {
         buildHeap();
     }
 
-    public int getCurrentSize() {
+    int getCurrentSize() {
         return currentSize;
     }
 
@@ -40,7 +40,7 @@ public class MinHeap<T extends Comparable<? super T>> {
             percolateDown(i);
     }
 
-    public void insert(T x) {
+    void insert(T x) {
         if (currentSize == array.length - 1)
             enlargeArray(array.length * 2 + 1);
         // percolate up
@@ -50,7 +50,7 @@ public class MinHeap<T extends Comparable<? super T>> {
         array[hole] = x;
     }
 
-    public T deleteMin() {
+    T deleteMin() {
         if (isEmpty())
             throw new ArrayIndexOutOfBoundsException();
 
@@ -82,7 +82,7 @@ public class MinHeap<T extends Comparable<? super T>> {
         array[hole] = tmp;
     }
 
-    public boolean isEmpty() {
+    private boolean isEmpty() {
         return currentSize == 0;
     }
 

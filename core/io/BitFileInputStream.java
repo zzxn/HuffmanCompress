@@ -1,6 +1,6 @@
 package core.io;
 
-import java.io.FileInputStream;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 
 /**
@@ -11,11 +11,11 @@ import java.io.IOException;
  * 经测试这个类没问题
  */
 public class BitFileInputStream {
-    private FileInputStream inputStream;
+    private BufferedInputStream inputStream;
     private byte thisByte;
     private int bitCount;
 
-    public BitFileInputStream(FileInputStream inputStream) {
+    public BitFileInputStream(BufferedInputStream inputStream) {
         this.inputStream = inputStream;
         thisByte = 0;
         bitCount = 0;

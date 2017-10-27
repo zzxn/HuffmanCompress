@@ -1,6 +1,6 @@
 package core.io;
 
-import java.io.FileInputStream;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 
 /**
@@ -9,9 +9,9 @@ import java.io.IOException;
  */
 public class MyScanner {
     private StringBuilder buf;
-    private FileInputStream fileInputStream;
+    private BufferedInputStream fileInputStream;
 
-    public MyScanner(FileInputStream fileInputStream) {
+    public MyScanner(BufferedInputStream fileInputStream) {
         buf = new StringBuilder();
         this.fileInputStream = fileInputStream;
     }

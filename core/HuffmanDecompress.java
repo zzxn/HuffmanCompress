@@ -2,10 +2,7 @@ package core;
 
 import core.io.ZcsFileInputStream;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.TreeMap;
 
 /**
@@ -22,7 +19,7 @@ public class HuffmanDecompress {
         if (!zcsFile.getName().matches("(.zcs)$"))
             System.out.println("It should have postfix .zcs.");
 
-        FileInputStream inputStream = new FileInputStream(zcsFile);
+        BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(zcsFile));
         ZcsFileInputStream zcsFileInputStream = new ZcsFileInputStream(inputStream);
 
         // 检查文件格式信息
@@ -49,7 +46,7 @@ public class HuffmanDecompress {
                 }
                 singleOutputFile.createNewFile();
             }
-            FileOutputStream fileOutputStream = new FileOutputStream(singleOutputFile);
+            BufferedOutputStream fileOutputStream = new BufferedOutputStream(new FileOutputStream(singleOutputFile));
             long fileSize = Long.parseLong(zcsFileInputStream.read().substring(10));
             String codeTableFlag = zcsFileInputStream.read();
             if (!codeTableFlag.equals("$CodeTable:"))
@@ -75,7 +72,6 @@ public class HuffmanDecompress {
                 codeBuilder.append(zcsFileInputStream.read());
                 if (decodeTable.containsKey(codeBuilder.toString())) {
                     fileOutputStream.write(decodeTable.get(codeBuilder.toString()));
-                    fileOutputStream.flush();
                     sizeCount++;
                     codeBuilder = new StringBuilder();
                 }

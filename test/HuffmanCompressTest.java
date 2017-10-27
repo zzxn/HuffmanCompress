@@ -20,9 +20,12 @@ public class HuffmanCompressTest {
 //        HuffmanCompress.compress(inputFile, outputFile);
 //        HuffmanCompress.compress(inputFile2, outputFile2);
         Long timestart = System.currentTimeMillis();
-        File bigInputFile = new File("E:\\迅雷下载\\QQ8.9.5.exe");
-        File bigOutputFile = new File("E:\\迅雷下载\\qq.zcs");
-        HuffmanCompress.compress(bigInputFile, bigOutputFile);
+//        File bigInputFile = new File("E:\\迅雷下载\\QQ8.9.5.exe");
+//        File bigOutputFile = new File("E:\\迅雷下载\\qq.zcs");
+//        HuffmanCompress.compress(bigInputFile, bigOutputFile);
+        File inputFile = new File("C:/Users/19098/Desktop/Test Cases");
+        File outputFile = new File("C:/Users/19098/Desktop/okTestCompress.zcs");
+        HuffmanCompress.compress(inputFile, outputFile);
         Long timeend = System.currentTimeMillis();
         System.out.println((timeend - timestart) / 1000.0 / 60.0);
     }
@@ -36,9 +39,13 @@ public class HuffmanCompressTest {
 //        HuffmanDecompress.decompressFile(zcsFile, outputFile);
 //        HuffmanDecompress.decompressFile(zcsFile2, outputFile2);
         Long timestart = System.currentTimeMillis();
-        File bigOutputFile = new File("E:\\迅雷下载\\qq.zcs");
+//        File bigOutputFile = new File("E:\\迅雷下载\\qq.zcs");
+//        File outputFile = new File("C:/Users/19098/Desktop/Test decompress");
+//        HuffmanDecompress.decompressFile(bigOutputFile, outputFile);
+        File zcsFile = new File("C:/Users/19098/Desktop/okTestCompress.zcs");
         File outputFile = new File("C:/Users/19098/Desktop/Test decompress");
-        HuffmanDecompress.decompressFile(bigOutputFile, outputFile);
+        HuffmanDecompress.decompressFile(zcsFile, outputFile);
         Long timeend = System.currentTimeMillis();
+        System.out.println((timeend - timestart) / 1000.0 / 60.0);
     }
 }

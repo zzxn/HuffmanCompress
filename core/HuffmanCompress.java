@@ -33,14 +33,13 @@ public class HuffmanCompress {
         System.out.print(inputFile.getPath());
         System.out.println("...");
 
-        InputStream inputStream = new FileInputStream(inputFile);
+        BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(inputFile));
         // 向输出文件中追加内容（append: true），考虑到在压缩多个文件时，不能覆盖之前的内容
-        OutputStream outputStream = new FileOutputStream(outputFile, true);
-        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
+        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(outputFile, true));
         ZcsFileOutputStream zcsFileOutputStream = new ZcsFileOutputStream(bufferedOutputStream);
 
         // 写入编码信息
-        PrintWriter printWriter = new PrintWriter(outputStream);
+        PrintWriter printWriter = new PrintWriter(bufferedOutputStream);
         printWriter.print("$FilePath:");
         printWriter.print(path);
         printWriter.print("\n");
@@ -75,7 +74,6 @@ public class HuffmanCompress {
         printWriter.print("\n");
         printWriter.print("$CodeTail\n");
         printWriter.close();
-        outputStream.close();
     }
 
     /**
@@ -89,7 +87,7 @@ public class HuffmanCompress {
         if (isFirstDir) {
             if (outputFile.isDirectory())
                 throw new IllegalArgumentException("outputFile should be a single file!");
-            FileOutputStream outputStream = new FileOutputStream(outputFile, true);
+            BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(outputFile, true));
             PrintWriter printWriter = new PrintWriter(outputStream);
             long fileSize = getDirSize(inputFile);
             System.out.print("FileSize: ");

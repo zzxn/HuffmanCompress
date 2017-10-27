@@ -99,101 +99,86 @@ public class CodeHuffTree {
         byte value;
         int frequency;
         ByteNode leftChild, rightChild;
-        StringBuilder code = new StringBuilder(""); // HUffman code build
+        StringBuilder code = new StringBuilder(""); // Huffman code build
         boolean isLeaf = true; // a real byte node if true, otherwise just a connection node
 
-        public ByteNode(byte value, int frequency) {
+        ByteNode(byte value, int frequency) {
             this.value = value;
             this.frequency = frequency;
         }
 
-        public ByteNode(int frequency) {
+        ByteNode(int frequency) {
             this.frequency = frequency;
-        }
-
-        public ByteNode(byte value, ByteNode leftChild, ByteNode rightChild, boolean isLeaf) {
-            this.value = value;
-            this.leftChild = leftChild;
-            this.rightChild = rightChild;
-            this.isLeaf = isLeaf;
         }
 
         /* getter and setter */
 
-        public String getCode() {
+        String getCode() {
             return code.toString();
         }
 
-        public byte getValue() {
+        byte getValue() {
             return value;
         }
 
-        public void setValue(byte value) {
+        void setValue(byte value) {
             this.value = value;
         }
 
-        public ByteNode getLeftChild() {
+        ByteNode getLeftChild() {
             return leftChild;
         }
 
-        public void setLeftChild(ByteNode leftChild) {
+        void setLeftChild(ByteNode leftChild) {
             this.leftChild = leftChild;
-            setLeaf(false);
+            if (isLeaf)
+                setLeaf(false);
             insertZeroBeforeAllChildCode(leftChild);
         }
 
-        public ByteNode getRightChild() {
+        ByteNode getRightChild() {
             return rightChild;
         }
 
-        public void setRightChild(ByteNode rightChild) {
+        void setRightChild(ByteNode rightChild) {
             this.rightChild = rightChild;
-            setLeaf(false);
+            if (isLeaf)
+                setLeaf(false);
             insertOneBeforeAllChildCode(rightChild);
         }
 
-        public boolean isLeaf() {
+        boolean isLeaf() {
             return isLeaf;
         }
 
-        public void setLeaf(boolean leaf) {
+        void setLeaf(boolean leaf) {
             this.isLeaf = leaf;
         }
 
-        public int getFrequency() {
+        int getFrequency() {
             return frequency;
         }
 
-        public void setFrequency(int frequency) {
+        void setFrequency(int frequency) {
             this.frequency = frequency;
         }
 
         private void insertZeroBeforeAllChildCode(ByteNode node) {
             if (node == null)
                 return;
-            node.code.insert(0, 0);
-            ByteNode left = node.getLeftChild();
-            ByteNode right = node.getRightChild();
-            if (left != null) {
-                insertZeroBeforeAllChildCode(left);
-            }
-            if (right != null) {
-                insertZeroBeforeAllChildCode(right);
-            }
+            if (node.isLeaf)
+                node.code.insert(0, 0);
+            insertZeroBeforeAllChildCode(node.getLeftChild());
+            insertZeroBeforeAllChildCode(node.getRightChild());
         }
 
         private void insertOneBeforeAllChildCode(ByteNode node) {
             if (node == null)
                 return;
-            node.code.insert(0, 1);
-            ByteNode left = node.getLeftChild();
-            ByteNode right = node.getRightChild();
-            if (left != null) {
-                insertOneBeforeAllChildCode(left);
-            }
-            if (right != null) {
-                insertOneBeforeAllChildCode(right);
-            }
+            if (node.isLeaf)
+                node.code.insert(0, 1);
+            insertOneBeforeAllChildCode(node.getLeftChild());
+            insertOneBeforeAllChildCode(node.getRightChild());
         }
         /* CompareTo for implements Comparable */
 
@@ -205,7 +190,7 @@ public class CodeHuffTree {
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
-            if (isLeaf())
+            if (isLeaf)
                 sb.append("is leaf ");
             sb.append("value:");
             sb.append(getValue());
