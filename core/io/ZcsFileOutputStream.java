@@ -22,9 +22,7 @@ public class ZcsFileOutputStream {
             bit = bitStr.charAt(i) - 48;
             if (bit == 1) {
                 buffer = buffer | (1 << (7 - count));
-            } else if (bit == 0) {
-                //do nothing
-            } else {
+            } else if (bit != 0) {
                 throw new IllegalArgumentException("bitStr should consist of only '0' and '1'");
             }
             count++;

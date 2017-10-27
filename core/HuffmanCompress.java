@@ -135,21 +135,38 @@ public class HuffmanCompress {
         System.out.println("...");
 
         if (file.isDirectory())
-            throw new IllegalArgumentException("Only to compressDir single file!");
-        InputStream inputStream = new FileInputStream(file);
+            throw new IllegalArgumentException("Only for single file!");
+
         int[] frequencyList = new int[256];
-        while (inputStream.available() != 0) {
-            frequencyList[inputStream.read()]++;
+
+        if (file.length() < 2048) {
+            // 小于2M时，统计全文
+            BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+            while (inputStream.available() != 0) {
+                frequencyList[inputStream.read()]++;
+            }
+            inputStream.close();
+        }else {
+            // 超过2M时，等间距抽样统计
+            // 抽取1M的数据
+            RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
+            int skipInt = (int)((file.length() >> 10) - 1);
+            for (int i = 0; i < 1025; i++) {
+                frequencyList[randomAccessFile.read()]++;
+                randomAccessFile.skipBytes(skipInt);
+            }
         }
-        inputStream.close();
 
         CodeHuffTree codeHuffTree = new CodeHuffTree(frequencyList);
         String[] codeTable = codeHuffTree.getCodeTable();
 
-        // 优化codeTable，把没用到的字节哈夫曼编码设置为空
-        for (int i = 0; i < 256; i++) {
-            if (frequencyList[i] == 0)
-                codeTable[i] = "";
+        if (file.length() < 2048) {
+            // 优化codeTable，把没用到的字节哈夫曼编码设置为空
+            // 抽样统计的时候，不能优化，而且意义不大
+            for (int i = 0; i < 256; i++) {
+                if (frequencyList[i] == 0)
+                    codeTable[i] = "";
+            }
         }
         return codeTable;
     }
