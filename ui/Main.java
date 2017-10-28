@@ -40,12 +40,14 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         TabPane tabPane = new TabPane();
 
-        tabPane.setTabMinWidth(150.0);
+        tabPane.setTabMinWidth(250.0);
         tabPane.setTabMinHeight(30.0);
-        tabPane.setPadding(new Insets(10.0, 10.0, 10.0, 10.0));
+        tabPane.setPadding(new Insets(10.0, 5.0, 10.0, 5.0));
 
         Tab tab1 = new Tab("压缩");
         Tab tab2 = new Tab("解压");
+        tab1.setClosable(false);
+        tab2.setClosable(false);
 
         tabPane.getTabs().addAll(tab1, tab2);
 
@@ -56,6 +58,9 @@ public class Main extends Application {
         gridPane2.setHgap(10.0);
         gridPane1.setVgap(10.0);
         gridPane2.setVgap(10.0);
+
+        fileToBeDecompressed.setMinWidth(420.0);
+        fileToBeCompressed.setMinWidth(420.0);
 
         gridPane1.add(fileToBeCompressed, 0, 1, 2, 1);
         gridPane1.add(chooseFileToBeCompressed, 2, 1);
