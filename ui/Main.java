@@ -93,8 +93,8 @@ public class Main extends Application {
         console2.setEditable(false);
         console1.setWrapText(true);
         console2.setWrapText(true);
-        console1.appendText("压缩速度为 10~40 M/min，点击按钮后请等待");
-        console2.appendText("解压速度为 5~10 M/min，点击按钮后请等待");
+        console1.appendText("压缩速度为10~40M/min，对于大文件，压缩速度在35M/min左右\r\n点击按钮后请等待\r\n");
+        console2.appendText("解压速度为 5~10 M/min，点击按钮后请等待\r\n");
 
         tab1.setContent(gridPane1);
         tab2.setContent(gridPane2);
@@ -167,7 +167,7 @@ public class Main extends Application {
                 HuffmanCompress.compress(inputFile, outputFile);
                 time = (System.currentTimeMillis() - time) / 1000;
                 console1.appendText("压缩完成，已经压缩到 " + outputPath + "\r\n");
-                console1.appendText("用时秒数：" + time);
+                console1.appendText("用时秒数：" + time + "\r\n");
                 System.out.println("finish compress");
             }
         } catch (Exception e) {
@@ -187,7 +187,7 @@ public class Main extends Application {
             HuffmanDecompress.decompressFile(inputFile, outputFile);
             time = (System.currentTimeMillis() - time) / 1000;
             console2.appendText("解压完成\r\n");
-            console2.appendText("用时秒数：" + time);
+            console2.appendText("用时秒数：" + time + "\r\n");
         } catch (Exception e) {
             Alert information = new Alert(Alert.AlertType.INFORMATION,"文件不合法或读写错误");
             information.show();
