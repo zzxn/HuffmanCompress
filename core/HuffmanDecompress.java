@@ -3,6 +3,8 @@ package core;
 import core.io.ZcsFileInputStream;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeMap;
 
 /**
@@ -17,7 +19,9 @@ public class HuffmanDecompress {
         if (outputFile.isFile())
             throw new IllegalArgumentException("Only to decompress to a directory!");
 
-        BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(zcsFile));
+        // 根据文件大小确定缓冲区大小
+        int bufferSize = (int)(zcsFile.length() < 52428800 ? zcsFile.length() : 52428800); // 50MB
+        BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(zcsFile), bufferSize);
         ZcsFileInputStream zcsFileInputStream = new ZcsFileInputStream(inputStream);
 
         // 检查文件格式信息
@@ -44,7 +48,7 @@ public class HuffmanDecompress {
                 }
                 singleOutputFile.createNewFile();
             }
-            BufferedOutputStream fileOutputStream = new BufferedOutputStream(new FileOutputStream(singleOutputFile));
+            BufferedOutputStream fileOutputStream = new BufferedOutputStream(new FileOutputStream(singleOutputFile), bufferSize);
             long fileSize = Long.parseLong(zcsFileInputStream.read().substring(10));
             String codeTableFlag = zcsFileInputStream.read();
             if (!codeTableFlag.equals("$CodeTable:"))
@@ -52,20 +56,20 @@ public class HuffmanDecompress {
 
             // 获取编码表
             System.out.println("getting code table: " + singleOutputFile.getPath());
-            TreeMap<String, Integer> decodeTable = new TreeMap<>();
+            HashMap<String, Integer> decodeTable = new HashMap<>();
             for (int i = 0; i < 256; i++) {
                 String code = zcsFileInputStream.read();
                 if (code.length() != 0)
                     decodeTable.put(code, i);
             }
 
-            // 进入编码区，zcsFileInputStream行为改变，现在返回0或1单字字符串
+            // 进入编码区，zcsFileInputStream行为改变，现在返回0或1
             System.out.println("decompressing: " + singleOutputFile.getPath());
             String codeHead = zcsFileInputStream.read();
             if (!codeHead.equals("$CodeHead"))
                 throw new IllegalArgumentException("Invalid .zcs file");
             long sizeCount = 0L; // 记录已经解压出的数据量
-            StringBuilder codeBuilder = new StringBuilder();
+            StringBuilder codeBuilder = new StringBuilder(256);
             while (sizeCount < fileSize) {
                 codeBuilder.append(zcsFileInputStream.read());
                 if (decodeTable.containsKey(codeBuilder.toString())) {

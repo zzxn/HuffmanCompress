@@ -93,8 +93,8 @@ public class Main extends Application {
         console2.setEditable(false);
         console1.setWrapText(true);
         console2.setWrapText(true);
-        console1.appendText("压缩速度为10~40M/min，对于大文件，压缩速度在35M/min左右\r\n点击按钮后请等待\r\n");
-        console2.appendText("解压速度为 5~10 M/min，点击按钮后请等待\r\n");
+        console1.appendText("压缩速度为30~40M/min，点击按钮后请等待\r\n");
+        console2.appendText("解压速度为 3~5 M/min，点击按钮后请等待\r\n");
 
         tab1.setContent(gridPane1);
         tab2.setContent(gridPane2);

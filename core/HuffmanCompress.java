@@ -33,9 +33,11 @@ public class HuffmanCompress {
         System.out.print(inputFile.getPath());
         System.out.println("...");
 
-        BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(inputFile));
+        // 根据文件大小确定缓冲区大小
+        int bufferSize = (int)(inputFile.length() < 52428800 ? inputFile.length() : 52428800); // 50MB
+        BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(inputFile), bufferSize);
         // 向输出文件中追加内容（append: true），考虑到在压缩多个文件时，不能覆盖之前的内容
-        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(outputFile, true));
+        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(outputFile, true), bufferSize);
         ZcsFileOutputStream zcsFileOutputStream = new ZcsFileOutputStream(bufferedOutputStream);
 
         // 写入编码信息
@@ -87,7 +89,7 @@ public class HuffmanCompress {
         if (isFirstDir) {
             if (outputFile.isDirectory())
                 throw new IllegalArgumentException("outputFile should be a single file!");
-            BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(outputFile, true));
+            BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(outputFile, true), 512000);
             PrintWriter printWriter = new PrintWriter(outputStream);
             long fileSize = getDirSize(inputFile);
             System.out.print("FileSize: ");
@@ -141,7 +143,7 @@ public class HuffmanCompress {
 
         if (file.length() < 2048) {
             // 小于2M时，统计全文
-            BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+            BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file), 2048);
             while (inputStream.available() != 0) {
                 frequencyList[inputStream.read()]++;
             }
