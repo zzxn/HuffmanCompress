@@ -10,18 +10,18 @@ import java.io.IOException;
  * 被zcsFileInputStream调用
  * 经测试这个类没问题
  */
-public class BitFileInputStream {
+class BitFileInputStream {
     private BufferedInputStream inputStream;
     private byte thisByte;
     private int bitCount;
 
-    public BitFileInputStream(BufferedInputStream inputStream) {
+    BitFileInputStream(BufferedInputStream inputStream) {
         this.inputStream = inputStream;
         thisByte = 0;
         bitCount = 0;
     }
 
-    public int read() throws IOException {
+    int read() throws IOException {
         if (bitCount == 0) {
             thisByte = (byte) inputStream.read();
         }
@@ -35,19 +35,19 @@ public class BitFileInputStream {
         return thisBit;
     }
 
-    public void reset() {
+    void reset() {
         thisByte = 0;
         bitCount = 0;
     }
 
-    public long available() throws IOException {
+    long available() throws IOException {
         if (inputStream.available() == 0 && bitCount == 0)
             return 0;
         else
             return inputStream.available() * 8 + 8 - bitCount;
     }
 
-    public void close() throws IOException {
+    void close() throws IOException {
         inputStream.close();
     }
 

@@ -7,16 +7,16 @@ import java.io.IOException;
  * @author 16307110325
  * Created on 2017/10/25.
  */
-public class MyScanner {
+class MyScanner {
     private StringBuilder buf;
     private BufferedInputStream fileInputStream;
 
-    public MyScanner(BufferedInputStream fileInputStream) {
+    MyScanner(BufferedInputStream fileInputStream) {
         buf = new StringBuilder();
         this.fileInputStream = fileInputStream;
     }
 
-    public String nextLine() throws IOException {
+    String nextLine() throws IOException {
         while (fileInputStream.available() != 0) {
             int nextByte = fileInputStream.read();
             if (nextByte != 0x0A) {
@@ -31,7 +31,7 @@ public class MyScanner {
         return buf.toString();
     }
 
-    public String next() throws IOException {
+    String next() throws IOException {
         return nextLine();
     }
 }

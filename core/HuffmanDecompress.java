@@ -16,8 +16,6 @@ public class HuffmanDecompress {
             throw new IllegalArgumentException("Only to decompress single .zcs file!");
         if (outputFile.isFile())
             throw new IllegalArgumentException("Only to decompress to a directory!");
-        if (!zcsFile.getName().matches("(.zcs)$"))
-            System.out.println("It should have postfix .zcs.");
 
         BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(zcsFile));
         ZcsFileInputStream zcsFileInputStream = new ZcsFileInputStream(inputStream);
@@ -53,7 +51,7 @@ public class HuffmanDecompress {
                 throw new IllegalArgumentException("Invalid .zcs file");
 
             // 获取编码表
-            System.out.println("获取文件编码表：" + singleOutputFile.getPath());
+            System.out.println("getting code table: " + singleOutputFile.getPath());
             TreeMap<String, Integer> decodeTable = new TreeMap<>();
             for (int i = 0; i < 256; i++) {
                 String code = zcsFileInputStream.read();
@@ -62,7 +60,7 @@ public class HuffmanDecompress {
             }
 
             // 进入编码区，zcsFileInputStream行为改变，现在返回0或1单字字符串
-            System.out.println("解码中：" + singleOutputFile.getPath());
+            System.out.println("decompressing: " + singleOutputFile.getPath());
             String codeHead = zcsFileInputStream.read();
             if (!codeHead.equals("$CodeHead"))
                 throw new IllegalArgumentException("Invalid .zcs file");
@@ -86,7 +84,7 @@ public class HuffmanDecompress {
             }
             if (!codeTail.equals("$CodeTail") && inputStream.available() == 0)
                 throw new IllegalArgumentException("Invalid .zcs File");
-            System.out.println("文件 " + singleOutputFile.getPath() + " 解压完成");
+            System.out.println("file " + singleOutputFile.getPath() + " is finished");
         }
 
     }
