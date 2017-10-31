@@ -35,6 +35,7 @@ public class HuffmanCompress {
 
         // 根据文件大小确定缓冲区大小
         int bufferSize = (int)(inputFile.length() < 52428800 ? inputFile.length() : 52428800); // 50MB
+        if (bufferSize == 0) bufferSize = 128;
         BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(inputFile), bufferSize);
         // 向输出文件中追加内容（append: true），考虑到在压缩多个文件时，不能覆盖之前的内容
         BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(outputFile, true), bufferSize);
@@ -141,9 +142,9 @@ public class HuffmanCompress {
 
         int[] frequencyList = new int[256];
 
-        if (file.length() < 2048) {
+        if (file.length() < 2097152) {
             // 小于2M时，统计全文
-            BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file), 2048);
+            BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file), 2097152);
             while (inputStream.available() != 0) {
                 frequencyList[inputStream.read()]++;
             }
@@ -152,8 +153,8 @@ public class HuffmanCompress {
             // 超过2M时，等间距抽样统计
             // 抽取1M的数据
             RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
-            int skipInt = (int)((file.length() >> 10) - 1);
-            for (int i = 0; i < 1025; i++) {
+            int skipInt = (int)((file.length() / 2097152) - 1);
+            for (int i = 0; i < 1048576; i++) {
                 frequencyList[randomAccessFile.read()]++;
                 randomAccessFile.skipBytes(skipInt);
             }
@@ -162,7 +163,7 @@ public class HuffmanCompress {
         CodeHuffTree codeHuffTree = new CodeHuffTree(frequencyList);
         String[] codeTable = codeHuffTree.getCodeTable();
 
-        if (file.length() < 2048) {
+        if (file.length() < 2097152) {
             // 优化codeTable，把没用到的字节哈夫曼编码设置为空
             // 抽样统计的时候，不能优化，而且意义不大
             for (int i = 0; i < 256; i++) {
