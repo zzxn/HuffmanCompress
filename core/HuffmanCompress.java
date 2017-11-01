@@ -14,7 +14,7 @@ public class HuffmanCompress {
     // 在compress中用来判断是否是最外层文件夹
     private static boolean isFirstDir = true;
     private static int dirPathLen = 0;
-    public static final int FILE_BUFFER_SIZE = 1 << 26;
+    static final int FILE_BUFFER_SIZE = 1 << 26;
 
     /**
      * @param inputFile  需要压缩的文件
@@ -70,7 +70,7 @@ public class HuffmanCompress {
                     buffer = buffer | (1 << count);
                 }
                 //一个byte填满的时候，write这个byte
-                if (count-- == -1) {
+                if (--count == -1) {
                     count = 7;
                     bufferedOutputStream.write(buffer);
                     buffer = 0;
@@ -145,9 +145,10 @@ public class HuffmanCompress {
             int[] frequencyList = new int[256];
             long fileLength = file.length();
             int bufferSize = (int)(fileLength < FILE_BUFFER_SIZE ? fileLength : FILE_BUFFER_SIZE);
+            if (bufferSize == 0) bufferSize = 8;
             BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file), bufferSize);
             for (int nextByte = inputStream.read(); nextByte != -1; nextByte = inputStream.read())
-                frequencyList[inputStream.read()]++;
+                frequencyList[nextByte]++;
             inputStream.close();
 
             CodeHuffTree codeHuffTree = new CodeHuffTree(frequencyList);
