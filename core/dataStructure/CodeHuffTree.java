@@ -1,5 +1,7 @@
 package core.dataStructure;
 
+import java.util.LinkedList;
+
 /**
  * @author 16307110325
  * Created on 2017/10/19.
@@ -8,7 +10,7 @@ public class CodeHuffTree {
 
     /* fields and constructor */
     private ByteNode root;
-    private String[] codeTable;
+    private int[][] codeTable;
 
     public CodeHuffTree(int[] frequencyList) {
         if (frequencyList.length != 256)
@@ -39,43 +41,8 @@ public class CodeHuffTree {
         this.root = pqueue.deleteMin();
 
         // build a code table (array)
-        this.codeTable = new String[256];
+        this.codeTable = new int[256][];
         for (int i = 0; i < 256; i++) {
-            codeTable[i] = byteNodeList[i].getCode();
-        }
-    }
-
-    public CodeHuffTree(int[] frequencyList, int length) {
-        if (frequencyList.length != length)
-            throw new IllegalArgumentException
-                    ("Byte frequency list must be 256 length");
-
-        // build a ByteNode list
-        ByteNode[] byteNodeList = new ByteNode[length];
-        for (int i = 0; i < length; i++) {
-            byteNodeList[i] = new ByteNode((byte) i, frequencyList[i]);
-        }
-
-        // build a Huffman tree
-        // 这里可能有误，因为不知道ArrayCopy干了什么
-//        core.dataStructure.MinHeap<ByteNode> pqueue = new core.dataStructure.MinHeap<>(byteNodeList);
-        MinHeap<ByteNode> pqueue = new MinHeap<>();
-        for (int i = 0; i < length; i++) {
-            pqueue.insert(byteNodeList[i]);
-        }
-        while (pqueue.getCurrentSize() != 1) {
-            ByteNode node1 = pqueue.deleteMin();
-            ByteNode node2 = pqueue.deleteMin();
-            ByteNode newNode = new ByteNode(node1.getFrequency() + node2.getFrequency());
-            newNode.setLeftChild(node1);
-            newNode.setRightChild(node2);
-            pqueue.insert(newNode);
-        }
-        this.root = pqueue.deleteMin();
-
-        // build a code table (array)
-        this.codeTable = new String[length];
-        for (int i = 0; i < length; i++) {
             codeTable[i] = byteNodeList[i].getCode();
         }
     }
@@ -86,7 +53,7 @@ public class CodeHuffTree {
 
     /* get code Table */
 
-    public String[] getCodeTable() {
+    public int[][] getCodeTable() {
         return codeTable;
     }
 
@@ -99,7 +66,7 @@ public class CodeHuffTree {
         byte value;
         int frequency;
         ByteNode leftChild, rightChild;
-        StringBuilder code = new StringBuilder(""); // Huffman code build
+        LinkedList<Integer> code = new LinkedList<>(); // Huffman code build
         boolean isLeaf = true; // a real byte node if true, otherwise just a connection node
 
         ByteNode(byte value, int frequency) {
@@ -113,8 +80,12 @@ public class CodeHuffTree {
 
         /* getter and setter */
 
-        String getCode() {
-            return code.toString();
+        int[] getCode() {
+            int len = code.size();
+            int[] rs = new int[len];
+            for (int i = 0; i < len; i++)
+                rs[i] = code.get(i);
+            return rs;
         }
 
         byte getValue() {
@@ -167,7 +138,7 @@ public class CodeHuffTree {
             if (node == null)
                 return;
             if (node.isLeaf)
-                node.code.insert(0, 0);
+                node.code.addFirst(0);
             insertZeroBeforeAllChildCode(node.getLeftChild());
             insertZeroBeforeAllChildCode(node.getRightChild());
         }
@@ -176,7 +147,7 @@ public class CodeHuffTree {
             if (node == null)
                 return;
             if (node.isLeaf)
-                node.code.insert(0, 1);
+                node.code.addFirst(1);
             insertOneBeforeAllChildCode(node.getLeftChild());
             insertOneBeforeAllChildCode(node.getRightChild());
         }
