@@ -48,9 +48,4 @@ public class ZcsFileInputStream {
         inCodeArea = false;
         bitFileInputStream.reset();
     }
-
-    public int available() throws IOException {
-        return fileInputStream.available();
-    }
-
 }

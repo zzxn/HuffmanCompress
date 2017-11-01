@@ -1,9 +1,9 @@
 package core;
 
 import core.dataStructure.CodeHuffTree;
-import core.io.ZcsFileOutputStream;
 
 import java.io.*;
+
 
 /**
  * @author 16307110325
@@ -14,6 +14,7 @@ public class HuffmanCompress {
     // 在compress中用来判断是否是最外层文件夹
     private static boolean isFirstDir = true;
     private static int dirPathLen = 0;
+    public static final int FILE_BUFFER_SIZE = 1 << 26;
 
     /**
      * @param inputFile  需要压缩的文件
@@ -23,7 +24,7 @@ public class HuffmanCompress {
      * @throws IOException IOException
      *                     把单个文件进行压缩，并将压缩后编码与特定格式压缩信息写入输出文件
      */
-    private static void compressSingleFile(File inputFile, File outputFile, String[] codeTable, String path) throws IOException {
+    private static void compressSingleFile(File inputFile, File outputFile, int[][] codeTable, String path) throws IOException {
         if (inputFile.isDirectory())
             throw new IllegalArgumentException("Only to compressDir single file!");
         if (codeTable.length != 256)
@@ -34,12 +35,12 @@ public class HuffmanCompress {
         System.out.println("...");
 
         // 根据文件大小确定缓冲区大小
-        int bufferSize = (int)(inputFile.length() < 52428800 ? inputFile.length() : 52428800); // 50MB
+        long fileLength = inputFile.length();
+        int bufferSize = (int)(fileLength < FILE_BUFFER_SIZE ? fileLength : FILE_BUFFER_SIZE);
         if (bufferSize == 0) bufferSize = 128;
         BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(inputFile), bufferSize);
         // 向输出文件中追加内容（append: true），考虑到在压缩多个文件时，不能覆盖之前的内容
         BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(outputFile, true), bufferSize);
-        ZcsFileOutputStream zcsFileOutputStream = new ZcsFileOutputStream(bufferedOutputStream);
 
         // 写入编码信息
         PrintWriter printWriter = new PrintWriter(bufferedOutputStream);
@@ -48,11 +49,12 @@ public class HuffmanCompress {
         printWriter.print("\n");
         // 解压时用，大小到了就不再解码（说明剩下的bit都是不满一个byte的补0）
         printWriter.print("$FileSize:");
-        printWriter.print(inputFile.length());
+        printWriter.print(fileLength);
         printWriter.print("\n");
         printWriter.print("$CodeTable:\n");
-        for (String aCodeTable : codeTable) {
-            printWriter.print(aCodeTable);
+        for (int[] aCodeTable : codeTable) {
+            for (int i : aCodeTable)
+                printWriter.print(i);
             printWriter.print("\n");
         }
         printWriter.print("$CodeHead\n");
@@ -60,23 +62,33 @@ public class HuffmanCompress {
         // 不能close，因为之后还要用这个outputStream
 
         // 写入编码区
-        while (inputStream.available() != 0) {
-            int thisByte = inputStream.read();
-            String code = codeTable[thisByte];
-            zcsFileOutputStream.write(code);
-            // 这里不要flush，否则产生很可能产生bug
-            // 可能产生bug的原因是：flush时，如果发现所写的code不是整数个byte，会在末尾补0
-            // 而补0只能发生在编码区的末尾
-            // 发生在中间时，显然会错误解码
+        int buffer = 0;
+        int count = 7;
+        for (int nextByte = inputStream.read(); nextByte != -1; nextByte = inputStream.read()) {
+            for (int bit : codeTable[nextByte]) {
+                if (bit == 1) {
+                    buffer = buffer | (1 << count);
+                }
+                //一个byte填满的时候，write这个byte
+                if (count-- == -1) {
+                    count = 7;
+                    bufferedOutputStream.write(buffer);
+                    buffer = 0;
+                }
+            }
         }
         // 必须flush
-        zcsFileOutputStream.flush();
+        // 如果一个byte没有写完，那么后面补零
+        if (count != 7)
+            bufferedOutputStream.write(buffer);
+        bufferedOutputStream.flush();
         inputStream.close();
 
         //打印编码结束
         printWriter.print("\n");
         printWriter.print("$CodeTail\n");
         printWriter.close();
+        System.out.println("compression finished");
     }
 
     /**
@@ -93,9 +105,6 @@ public class HuffmanCompress {
             BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(outputFile, true), 512000);
             PrintWriter printWriter = new PrintWriter(outputStream);
             long fileSize = getDirSize(inputFile);
-            System.out.print("FileSize: ");
-            System.out.print(fileSize);
-            System.out.print("\n");
             dirPathLen = inputFile.getPath().length() - inputFile.getName().length();
 
             printWriter.print("$ZhuxiaoningCompressedFile\n");
@@ -107,16 +116,14 @@ public class HuffmanCompress {
             isFirstDir = false;
         }
 
-        if (inputFile.isDirectory()) {
-            // 逐个文件写入压缩编码
-            File[] allFiles = inputFile.listFiles();
-            for (File file : allFiles) {
-                compressDir(file, outputFile);
-            }
-        } else if (inputFile.isFile()) {
+        if (inputFile.isFile()) {
             String fileNameWithPath = inputFile.getPath().substring(dirPathLen);
-            String[] codeTable = getFileCodeTable(inputFile);
+            int[][] codeTable = getFileCodeTable(inputFile);
             compressSingleFile(inputFile, outputFile, codeTable, fileNameWithPath);
+        } else {
+            // 逐个文件写入压缩编码
+            for (File file : inputFile.listFiles())
+                compressDir(file, outputFile);
         }
 
     }
@@ -128,50 +135,35 @@ public class HuffmanCompress {
 
     /**
      * @param file 需要统计的文件
-     * @return String[256] codeTable，codeTable[byte]就是相应byte的编码（由字符0和1组成的String）
+     * @return int[256][] codeTable，codeTable[byte]就是相应byte的编码（由0\1组成的int[]）
      * @throws IOException IOException
      *                     对输入的文件进行统计，返回编码表
      */
-    private static String[] getFileCodeTable(File file) throws IOException {
-        System.out.print("making codeTable for ");
-        System.out.print(file.getPath());
-        System.out.println("...");
 
-        if (file.isDirectory())
-            throw new IllegalArgumentException("Only for single file!");
-
-        int[] frequencyList = new int[256];
-
-        if (file.length() < 2097152) {
-            // 小于2M时，统计全文
-            BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file), 2097152);
-            while (inputStream.available() != 0) {
+    private static int[][] getFileCodeTable(File file) throws IOException {
+        if (file.isFile()) {
+            int[] frequencyList = new int[256];
+            long fileLength = file.length();
+            int bufferSize = (int)(fileLength < FILE_BUFFER_SIZE ? fileLength : FILE_BUFFER_SIZE);
+            BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file), bufferSize);
+            for (int nextByte = inputStream.read(); nextByte != -1; nextByte = inputStream.read())
                 frequencyList[inputStream.read()]++;
-            }
             inputStream.close();
-        }else {
-            // 超过2M时，等间距抽样统计
-            // 抽取1M的数据
-            RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
-            int skipInt = (int)((file.length() / 2097152) - 1);
-            for (int i = 0; i < 1048576; i++) {
-                frequencyList[randomAccessFile.read()]++;
-                randomAccessFile.skipBytes(skipInt);
-            }
-        }
 
-        CodeHuffTree codeHuffTree = new CodeHuffTree(frequencyList);
-        String[] codeTable = codeHuffTree.getCodeTable();
+            CodeHuffTree codeHuffTree = new CodeHuffTree(frequencyList);
+            int[][] codeTable = codeHuffTree.getCodeTable();
 
-        if (file.length() < 2097152) {
-            // 优化codeTable，把没用到的字节哈夫曼编码设置为空
-            // 抽样统计的时候，不能优化，而且意义不大
+            // 优化
+            int[] voidArr = new int[0];
             for (int i = 0; i < 256; i++) {
                 if (frequencyList[i] == 0)
-                    codeTable[i] = "";
+                    codeTable[i] = voidArr;
             }
+
+            return codeTable;
+        } else {
+            throw new IllegalArgumentException("Only for single file!");
         }
-        return codeTable;
     }
 
     /**
