@@ -169,7 +169,6 @@ public class Main extends Application {
                     time = (System.currentTimeMillis() - time) / 1000;
                     console1.appendText("压缩完成，已经压缩到 " + outputPath + "\r\n");
                     console1.appendText("用时秒数：" + time + "\r\n");
-                    console1.appendText("压缩率： " + (100 * outputFile.length() / inputFile.length()) + "%\r\n");
                     System.out.println("finish compress");
                 }
             } catch (Exception e) {
