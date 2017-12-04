@@ -169,6 +169,7 @@ public class Main extends Application {
                     time = (System.currentTimeMillis() - time) / 1000;
                     console1.appendText("压缩完成，已经压缩到 " + outputPath + "\r\n");
                     console1.appendText("用时秒数：" + time + "\r\n");
+                    console1.appendText("压缩率： " + (100 * outputFile.length() / inputFile.length()) + "%\r\n");
                     System.out.println("finish compress");
                 }
             } catch (Exception e) {
@@ -182,21 +183,18 @@ public class Main extends Application {
         String inputPath = fileToBeDecompressed.getText();
         String outputPath = decompressTo.getText();
         console2.appendText("解压 " + inputPath + "中...\r\n");
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    File inputFile = new File(inputPath);
-                    File outputFile = new File(outputPath);
-                    long time = System.currentTimeMillis();
-                    HuffmanDecompress.decompressFile(inputFile, outputFile);
-                    time = (System.currentTimeMillis() - time) / 1000;
-                    console2.appendText("解压完成\r\n");
-                    console2.appendText("用时秒数：" + time + "\r\n");
-                } catch (Exception e) {
-                    Alert information = new Alert(Alert.AlertType.INFORMATION,"文件不合法或读写错误");
-                    information.show();
-                }
+        new Thread(() -> {
+            try {
+                File inputFile = new File(inputPath);
+                File outputFile = new File(outputPath);
+                long time = System.currentTimeMillis();
+                HuffmanDecompress.decompressFile(inputFile, outputFile);
+                time = (System.currentTimeMillis() - time) / 1000;
+                console2.appendText("解压完成\r\n");
+                console2.appendText("用时秒数：" + time + "\r\n");
+            } catch (Exception e) {
+                Alert information = new Alert(Alert.AlertType.INFORMATION,"文件不合法或读写错误");
+                information.show();
             }
         }).start();
     }
